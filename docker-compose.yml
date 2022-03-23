@@ -26,8 +26,6 @@ services:
     command: "-p ${POSTGRES_PORT}"
     environment:
       - PGDATA=/data/postgres
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - ./postgres:/data/postgres
     networks:
