@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  tg-bot:
+    image: ghcr.io/gallereee/tg-bot:latest
+    env_file:
+      - ./.env
+    environment:
+      NODE_ENV: "production"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
+      REDIS_URL: "redis://:${REDIS_PASSWORD}@redis:${REDIS_PORT}"
+      BOT_ACCESS_TOKEN: ${BOT_ACCESS_TOKEN}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - postgres
+      - redis
+    restart: always
+
+  postgres:
+    image: postgres
+    env_file:
+      - ./.env
+    command: "-p ${POSTGRES_PORT}"
+    environment:
+      - PGDATA=/data/postgres
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - ./postgres:/data/postgres
+    networks:
+      - postgres
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -p $$POSTGRES_PORT -d $$POSTGRES_DB -U $$POSTGRES_USER" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis
+    env_file:
+      - ./.env
+    command: "redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --port ${REDIS_PORT}"
+    volumes:
+      - ./redis:/data
+    networks:
+      - redis
+    restart: always
+
+networks:
+  redis:
+  postgres:
