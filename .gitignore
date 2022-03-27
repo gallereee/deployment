@@ -1,5 +1,6 @@
 postgres
 redis
+logs
 
 .idea
 

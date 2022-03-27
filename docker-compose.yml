@@ -21,6 +21,8 @@ services:
       REDIS_URL: "redis://:${REDIS_PASSWORD}@redis:${REDIS_PORT}"
       BOT_ACCESS_TOKEN: ${BOT_ACCESS_TOKEN}
       PORT: ${API_PORT}
+    volumes:
+      - ./logs/api:/app/logs
     depends_on:
       postgres:
         condition: service_healthy
@@ -45,6 +47,8 @@ services:
       REDIS_URL: "redis://:${REDIS_PASSWORD}@redis:${REDIS_PORT}"
       BOT_ACCESS_TOKEN: ${BOT_ACCESS_TOKEN}
       WEB_HOST: ${WEB_HOST}
+    volumes:
+      - ./logs/tg-bot:/app/logs
     depends_on:
       postgres:
         condition: service_healthy
