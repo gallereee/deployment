@@ -5,7 +5,6 @@ services:
     env_file:
       - ./.env
     environment:
-      NODE_ENV: "production"
       PORT: ${WEB_PORT}
     ports:
       - "${WEB_PORT}:${WEB_PORT}"
@@ -16,25 +15,16 @@ services:
     env_file:
       - ./.env
     environment:
-      NODE_ENV: "production"
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
-      REDIS_URL: "redis://:${REDIS_PASSWORD}@redis:${REDIS_PORT}"
-      BOT_ACCESS_TOKEN: ${BOT_ACCESS_TOKEN}
-      PORT: ${API_PORT}
+      IAM_HOST: "iam"
+      PMS_HOST: "pms"
     volumes:
       - ./logs/api:/app/logs
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      tg-bot:
-        condition: service_started
     ports:
       - "${API_PORT}:${API_PORT}"
     networks:
-      - postgres
-      - redis
+      - iam
+      - pms
     restart: always
 
   tg-bot:
@@ -42,21 +32,54 @@ services:
     env_file:
       - ./.env
     environment:
-      NODE_ENV: "production"
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
-      REDIS_URL: "redis://:${REDIS_PASSWORD}@redis:${REDIS_PORT}"
-      BOT_ACCESS_TOKEN: ${BOT_ACCESS_TOKEN}
-      WEB_HOST: ${WEB_HOST}
+      QUEUE_REDIS_URL: "redis://:${TG_BOT_REDIS_PASSWORD}@tg-bot-redis:${TG_BOT_REDIS_PORT}"
+      IAM_HOST: "iam"
+      PMS_HOST: "pms"
     volumes:
       - ./logs/tg-bot:/app/logs
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
+      tg-bot-redis:
         condition: service_started
     networks:
+      - tg-bot-redis
+      - iam
+      - pms
+    restart: always
+
+  iam:
+    image: ghcr.io/gallereee/iam:latest
+    env_file:
+      - ./.env
+    environment:
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
+    volumes:
+      - ./logs/iam:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${IAM_PORT}:${IAM_PORT}"
+    networks:
+      - iam
       - postgres
-      - redis
+    restart: always
+
+  pms:
+    image: ghcr.io/gallereee/pms:latest
+    env_file:
+      - ./.env
+    environment:
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
+    volumes:
+      - ./logs/pms:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${PMS_PORT}:${PMS_PORT}"
+    networks:
+      - pms
+      - postgres
     restart: always
 
   postgres:
@@ -77,17 +100,19 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
+  tg-bot-redis:
     image: redis
     env_file:
       - ./.env
-    command: "redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --port ${REDIS_PORT}"
+    command: "redis-server --appendonly yes --requirepass ${TG_BOT_REDIS_PASSWORD} --port ${TG_BOT_REDIS_PORT}"
     volumes:
-      - ./redis:/data
+      - ./tg-bot-redis:/data
     networks:
-      - redis
+      - tg-bot-redis
     restart: always
 
 networks:
-  redis:
+  tg-bot-redis:
   postgres:
+  iam:
+  pms:
