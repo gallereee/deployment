@@ -57,8 +57,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    ports:
-      - "${IAM_PORT}:${IAM_PORT}"
     networks:
       - iam
       - postgres
@@ -75,8 +73,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    ports:
-      - "${PMS_PORT}:${PMS_PORT}"
     networks:
       - pms
       - postgres
