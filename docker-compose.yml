@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   web:
-    image: ghcr.io/gallereee/web:latest
+    image: ghcr.io/gallereee/web:${IMAGE_TAG}
     env_file:
       - ./.env
     environment:
@@ -11,7 +11,7 @@ services:
     restart: always
 
   api:
-    image: ghcr.io/gallereee/api:latest
+    image: ghcr.io/gallereee/api:${IMAGE_TAG}
     env_file:
       - ./.env
     environment:
@@ -28,7 +28,7 @@ services:
     restart: always
 
   tg-bot:
-    image: ghcr.io/gallereee/tg-bot:latest
+    image: ghcr.io/gallereee/tg-bot:${IMAGE_TAG}
     env_file:
       - ./.env
     environment:
@@ -47,7 +47,7 @@ services:
     restart: always
 
   iam:
-    image: ghcr.io/gallereee/iam:latest
+    image: ghcr.io/gallereee/iam:${IMAGE_TAG}
     env_file:
       - ./.env
     environment:
@@ -63,7 +63,7 @@ services:
     restart: always
 
   pms:
-    image: ghcr.io/gallereee/pms:latest
+    image: ghcr.io/gallereee/pms:${IMAGE_TAG}
     env_file:
       - ./.env
     environment:
