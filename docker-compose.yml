@@ -35,6 +35,8 @@ services:
       QUEUE_REDIS_URL: "redis://:${TG_BOT_REDIS_PASSWORD}@tg-bot-redis:${TG_BOT_REDIS_PORT}"
       IAM_HOST: "iam"
       PMS_HOST: "pms"
+    ports:
+      - "${BOT_PORT}:${BOT_PORT}"
     volumes:
       - ./logs/tg-bot:/app/logs
     depends_on:
