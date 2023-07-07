@@ -19,7 +19,7 @@ services:
       IAM_HOST: "iam"
       PMS_HOST: "pms"
     volumes:
-      - ./logs/api:/app/logs
+      - logs-api:/app/logs
     ports:
       - "${API_PORT}:${API_PORT}"
     networks:
@@ -38,7 +38,7 @@ services:
     ports:
       - "${BOT_PORT}:${BOT_PORT}"
     volumes:
-      - ./logs/tg-bot:/app/logs
+      - logs-tg-bot:/app/logs
     depends_on:
       tg-bot-redis:
         condition: service_started
@@ -55,7 +55,7 @@ services:
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
     volumes:
-      - ./logs/iam:/app/logs
+      - logs-iam:/app/logs
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,7 +71,7 @@ services:
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
     volumes:
-      - ./logs/pms:/app/logs
+      - logs-pms:/app/logs
     depends_on:
       postgres:
         condition: service_healthy
@@ -88,7 +88,7 @@ services:
     environment:
       - PGDATA=/data/postgres
     volumes:
-      - ./postgres:/data/postgres
+      - postgres:/data/postgres
     networks:
       - postgres
     restart: always
@@ -104,7 +104,7 @@ services:
       - ./.env
     command: "redis-server --appendonly yes --requirepass ${TG_BOT_REDIS_PASSWORD} --port ${TG_BOT_REDIS_PORT}"
     volumes:
-      - ./tg-bot-redis:/data
+      - tg-bot-redis:/data
     networks:
       - tg-bot-redis
     restart: always
@@ -114,3 +114,11 @@ networks:
   postgres:
   iam:
   pms:
+
+volumes:
+  logs-api:
+  logs-tg-bot:
+  logs-iam:
+  logs-pms:
+  postgres:
+  tg-bot-redis:
