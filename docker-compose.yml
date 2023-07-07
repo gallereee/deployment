@@ -12,8 +12,6 @@ services:
     image: ghcr.io/gallereee/api:${IMAGE_TAG}
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
-      IAM_HOST: "iam"
-      PMS_HOST: "pms"
     volumes:
       - logs-api:/app/logs
     ports:
@@ -27,8 +25,6 @@ services:
     image: ghcr.io/gallereee/tg-bot:${IMAGE_TAG}
     environment:
       QUEUE_REDIS_URL: "redis://:${TG_BOT_REDIS_PASSWORD}@tg-bot-redis:${TG_BOT_REDIS_PORT}"
-      IAM_HOST: "iam"
-      PMS_HOST: "pms"
     ports:
       - "${BOT_PORT}:${BOT_PORT}"
     volumes:
@@ -74,7 +70,7 @@ services:
     image: postgres
     command: "-p ${POSTGRES_PORT}"
     environment:
-      - PGDATA=/data/postgres
+      PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
     networks:
