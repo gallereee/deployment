@@ -2,8 +2,6 @@ version: "3.9"
 services:
   web:
     image: ghcr.io/gallereee/web:${IMAGE_TAG}
-    env_file:
-      - ./.env
     environment:
       PORT: ${WEB_PORT}
     ports:
@@ -12,8 +10,6 @@ services:
 
   api:
     image: ghcr.io/gallereee/api:${IMAGE_TAG}
-    env_file:
-      - ./.env
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
       IAM_HOST: "iam"
@@ -29,8 +25,6 @@ services:
 
   tg-bot:
     image: ghcr.io/gallereee/tg-bot:${IMAGE_TAG}
-    env_file:
-      - ./.env
     environment:
       QUEUE_REDIS_URL: "redis://:${TG_BOT_REDIS_PASSWORD}@tg-bot-redis:${TG_BOT_REDIS_PORT}"
       IAM_HOST: "iam"
@@ -50,8 +44,6 @@ services:
 
   iam:
     image: ghcr.io/gallereee/iam:${IMAGE_TAG}
-    env_file:
-      - ./.env
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
     volumes:
@@ -66,8 +58,6 @@ services:
 
   pms:
     image: ghcr.io/gallereee/pms:${IMAGE_TAG}
-    env_file:
-      - ./.env
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
     volumes:
@@ -82,8 +72,6 @@ services:
 
   postgres:
     image: postgres
-    env_file:
-      - ./.env
     command: "-p ${POSTGRES_PORT}"
     environment:
       - PGDATA=/data/postgres
@@ -100,8 +88,6 @@ services:
 
   tg-bot-redis:
     image: redis
-    env_file:
-      - ./.env
     command: "redis-server --appendonly yes --requirepass ${TG_BOT_REDIS_PASSWORD} --port ${TG_BOT_REDIS_PORT}"
     volumes:
       - tg-bot-redis:/data
