@@ -7,88 +7,88 @@ services:
       - "$WEB_PORT:$WEB_PORT"
     restart: always
 
-  api:
-    image: ghcr.io/gallereee/api:$IMAGE_TAG
-    environment:
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
-    volumes:
-      - logs-api:/app/logs
-    ports:
-      - "$API_PORT:$API_PORT"
-    networks:
-      - iam
-      - pms
-    restart: always
+  # api:
+  #   image: ghcr.io/gallereee/api:$IMAGE_TAG
+  #   environment:
+  #     DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
+  #   volumes:
+  #     - logs-api:/app/logs
+  #   ports:
+  #     - "$API_PORT:$API_PORT"
+  #   networks:
+  #     - iam
+  #     - pms
+  #   restart: always
 
-  tg-bot:
-    image: ghcr.io/gallereee/tg-bot:$IMAGE_TAG
-    environment:
-      QUEUE_REDIS_URL: "redis://:${TG_BOT_REDIS_PASSWORD}@tg-bot-redis:${TG_BOT_REDIS_PORT}"
-    ports:
-      - "$BOT_PORT:$BOT_PORT"
-    volumes:
-      - logs-tg-bot:/app/logs
-    depends_on:
-      tg-bot-redis:
-        condition: service_started
-    networks:
-      - tg-bot-redis
-      - iam
-      - pms
-    restart: always
+  # tg-bot:
+  #   image: ghcr.io/gallereee/tg-bot:$IMAGE_TAG
+  #   environment:
+  #     QUEUE_REDIS_URL: "redis://:${TG_BOT_REDIS_PASSWORD}@tg-bot-redis:${TG_BOT_REDIS_PORT}"
+  #   ports:
+  #     - "$BOT_PORT:$BOT_PORT"
+  #   volumes:
+  #     - logs-tg-bot:/app/logs
+  #   depends_on:
+  #     tg-bot-redis:
+  #       condition: service_started
+  #   networks:
+  #     - tg-bot-redis
+  #     - iam
+  #     - pms
+  #   restart: always
 
-  iam:
-    image: ghcr.io/gallereee/iam:$IMAGE_TAG
-    environment:
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
-    volumes:
-      - logs-iam:/app/logs
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - iam
-      - postgres
-    restart: always
+  # iam:
+  #   image: ghcr.io/gallereee/iam:$IMAGE_TAG
+  #   environment:
+  #     DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
+  #   volumes:
+  #     - logs-iam:/app/logs
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   networks:
+  #     - iam
+  #     - postgres
+  #   restart: always
 
-  pms:
-    image: ghcr.io/gallereee/pms:$IMAGE_TAG
-    environment:
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
-    volumes:
-      - logs-pms:/app/logs
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - pms
-      - postgres
-    restart: always
+  # pms:
+  #   image: ghcr.io/gallereee/pms:$IMAGE_TAG
+  #   environment:
+  #     DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
+  #   volumes:
+  #     - logs-pms:/app/logs
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   networks:
+  #     - pms
+  #     - postgres
+  #   restart: always
 
-  postgres:
-    image: postgres
-    command: "-p ${POSTGRES_PORT}"
-    environment:
-      PGDATA: /data/postgres
-    volumes:
-      - postgres:/data/postgres
-    networks:
-      - postgres
-    restart: always
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -p $$POSTGRES_PORT -d $$POSTGRES_DB -U $$POSTGRES_USER" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # postgres:
+  #   image: postgres
+  #   command: "-p ${POSTGRES_PORT}"
+  #   environment:
+  #     PGDATA: /data/postgres
+  #   volumes:
+  #     - postgres:/data/postgres
+  #   networks:
+  #     - postgres
+  #   restart: always
+  #   healthcheck:
+  #     test: [ "CMD-SHELL", "pg_isready -p $$POSTGRES_PORT -d $$POSTGRES_DB -U $$POSTGRES_USER" ]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
-  tg-bot-redis:
-    image: redis
-    command: "redis-server --appendonly yes --requirepass ${TG_BOT_REDIS_PASSWORD} --port ${TG_BOT_REDIS_PORT}"
-    volumes:
-      - tg-bot-redis:/data
-    networks:
-      - tg-bot-redis
-    restart: always
+  # tg-bot-redis:
+  #   image: redis
+  #   command: "redis-server --appendonly yes --requirepass ${TG_BOT_REDIS_PASSWORD} --port ${TG_BOT_REDIS_PORT}"
+  #   volumes:
+  #     - tg-bot-redis:/data
+  #   networks:
+  #     - tg-bot-redis
+  #   restart: always
 
 networks:
   tg-bot-redis:
