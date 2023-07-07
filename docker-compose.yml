@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   web:
     image: ghcr.io/gallereee/web:${IMAGE_TAG}
